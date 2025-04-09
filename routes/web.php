@@ -20,3 +20,5 @@ Route::get('/surveys/export', [SurveyController::class, 'export'])->name('survey
 
 // ✅ Main page route
 Route::get('/', [TemplateController::class, 'index']);
+// In routes/web.php
+Route::get('/survey/responses', [SurveyController::class, 'index'])->name('survey.responses');
