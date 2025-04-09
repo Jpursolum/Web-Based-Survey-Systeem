@@ -1,0 +1,4 @@
+/* Adjust the width of the sidebar */
+.fi-sidebar {
+    width: 220px !important; /* Adjust as needed */
+}
