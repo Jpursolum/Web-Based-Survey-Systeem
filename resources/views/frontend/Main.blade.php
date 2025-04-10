@@ -70,12 +70,12 @@
                         <p class="lead fw-normal text-muted mb-5">For more information you may visit our virtual Citizen's Charter Handbook: ( Citizens Charter )</p>
                         <!-- <a href="#!"><img class="app-badge" src="assets/img/app-store-badge.svg" alt="..." /></a> -->
                     </div>
-                    <button class="btn btn-primary rounded-pill px-3 mb-2 mb-lg-0" data-bs-toggle="modal" data-bs-target="#feedbackModal">
+                    <!--<button class="btn btn-primary rounded-pill px-3 mb-2 mb-lg-0" data-bs-toggle="modal" data-bs-target="#feedbackModal">
                         <span class="d-flex align-items-center">
                             <i class="bi-chat-text-fill me-2"></i>
                             <span class="small">Send Feedback</span>
                         </span>
-                    </button>
+                    </button>-->
                 </div>
             </div>
             <div class="col-lg-6">

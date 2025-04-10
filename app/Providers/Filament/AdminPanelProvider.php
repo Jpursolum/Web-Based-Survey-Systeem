@@ -31,7 +31,8 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            
+            ->unsavedChangesAlerts()
+            ->sidebarFullyCollapsibleOnDesktop() // Fully collapsible sidebar on desktop
             ->brandLogo(asset('images/image.png'), ['style' => 'width: 100px; height: 100px;']) 
             ->font('Poppins')
             ->colors([
