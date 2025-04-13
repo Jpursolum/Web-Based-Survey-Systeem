@@ -50,9 +50,9 @@
                 <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
                 <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
             </ul>
-            <button class="btn btn-primary rounded-pill px-3 ms-3" onclick="window.location.href='http://127.0.0.1:8000/admin';">
+           <!-- <button class="btn btn-primary rounded-pill px-3 ms-3" onclick="window.location.href='http://127.0.0.1:8000/admin';">
                 <i class="bi-lock-fill me-2"></i> Login
-            </button>
+            </button>-->
         </div>
     </div>
 </nav>
@@ -65,19 +65,38 @@
                 <!-- Mashead text and app badges-->
                 <div class="mb-5 mb-lg-0 text-center text-lg-start">
                     <h1 class="display-1 lh-1 mb-3">HELP US SERVE YOU BETTER!</h1>
-                    <p class="lead fw-normal text-muted mb-5">This Client Satisfaction Measurement (CSM) tracks the customer experience of government offices. Your feedback on the concluded transaction will help this office provide a better service. Personal information shared will be kept confidential and you always have the option to answer this form.</p>
+                    <p class="lead fw-normal text-muted mb-5">
+                        This Client Satisfaction Measurement (CSM) tracks the customer experience of government offices. Your feedback on the concluded transaction will help this office provide a better service. Personal information shared will be kept confidential and you always have the option to answer this form.
+                    </p>
+                
                     <div class="d-flex flex-column flex-lg-row align-items-center">
-                        <p class="lead fw-normal text-muted mb-5">For more information you may visit our virtual Citizen's Charter Handbook: ( Citizens Charter )</p>
+                        <p class="lead fw-normal text-muted mb-5">
+                            For more information you may visit our virtual Citizen's Charter Handbook: ( Citizens Charter )
+                        </p>
+                        {{-- Optional app badge placeholder --}}
                         <!-- <a href="#!"><img class="app-badge" src="assets/img/app-store-badge.svg" alt="..." /></a> -->
                     </div>
-                    <!--<button class="btn btn-primary rounded-pill px-3 mb-2 mb-lg-0" data-bs-toggle="modal" data-bs-target="#feedbackModal">
-                        <span class="d-flex align-items-center">
-                            <i class="bi-chat-text-fill me-2"></i>
-                            <span class="small">Send Feedback</span>
-                        </span>
-                    </button>-->
+                
+                    {{-- ✅ Feedback Button (Conditional) --}}
+                    @if(session('success') || $errors->has('error'))
+                        <!-- Already submitted: show disabled button -->
+                        <button class="btn btn-secondary rounded-pill px-3 mb-2 mb-lg-0" disabled title="You've already submitted feedback.">
+                            <span class="d-flex align-items-center">
+                                <i class="bi-check-circle-fill me-2"></i>
+                                <span class="small">Feedback Submitted</span>
+                            </span>
+                        </button>
+                    @else
+                        <!-- Normal feedback button -->
+                        <button class="btn btn-primary rounded-pill px-3 mb-2 mb-lg-0" data-bs-toggle="modal" data-bs-target="#feedbackModal">
+                            <span class="d-flex align-items-center">
+                                <i class="bi-chat-text-fill me-2"></i>
+                                <span class="small">Send Feedback</span>
+                            </span>
+                        </button>
+                    @endif
                 </div>
-            </div>
+            </div>                
             <div class="col-lg-6">
                 <!-- Masthead device mockup feature-->
                 <div class="masthead-device-mockup">
@@ -248,7 +267,7 @@
                     <ul class="list-unstyled">
                         <li class="d-flex align-items-center mb-2">
                             <i class="bi bi-geo-alt-fill text-primary me-3"></i>
-                            <span class="text-muted">Quezon City, Philippines</span>
+                            <span class="text-muted">Laoag City, Philippines</span>
                         </li>
                         <li class="d-flex align-items-center mb-2">
                             <i class="bi bi-telephone-fill text-primary me-3"></i>
@@ -381,9 +400,18 @@
                     <p class="text-white mb-0">
                         Click your answer to the Citizen's Charter (CC) questions. The Citizen's Charter is an official document that reflects the services of a government agency/office, including its requirements, fees, and processing times, among others.
                     </p>
+            
+                    <!-- ✅ Error Message -->
+                    @if ($errors->has('error'))
+                        <div class="alert alert-danger mt-3">
+                            {{ $errors->first('error') }}
+                        </div>
+                    @endif
                 </div>
+            
                 <button class="btn-close btn-close-white" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            
             
             <div class="modal-body border-0 p-4">
                 <form id="contactForm" action="{{ route('survey.submit') }}" method="POST">
@@ -417,7 +445,7 @@
                         <!-- Sex -->
                         <div class="form-floating mb-3">
                             <select class="form-control" id="sex" name="sex" required>
-                                <option value="" disabled selected>Select Sex</option>
+                                <option value="" disabled selected>Select Gender</option>
                                 <option value="Male">Male</option>
                                 <option value="Female">Female</option>
                                 <option value="Prefer not to say">Prefer not to say</option>
@@ -487,7 +515,9 @@
                             </select>
                             <label for="transaction_mode" class="fw-bold">Mode of Transaction</label>
                         </div>
-
+                        <div style="display: none;">
+                            <input type="text" name="website" autocomplete="off">
+                        </div>
 
 
                     <div class="d-grid">
@@ -588,19 +618,52 @@
                             </tbody>
                         </table>
                         <!-- Notification for Successful Submission -->
+{{-- ✅ Show SweetAlert for success --}}
 @if(session('success'))
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         Swal.fire({
             icon: 'success',
-            title: 'Survey Submitted',
-            text: '{{ session('success') }}',
-            confirmButtonText: 'OK'
+            title: '✅ Success!',
+            html: '<strong>{{ session('success') }}</strong>',
+            showConfirmButton: false,
+            timer: 2500,
+            timerProgressBar: true,
+            background: '#f0fff4',
+            color: '#2f855a',
+            toast: true,
+            position: 'top-end',
+            customClass: {
+                popup: 'shadow-lg rounded-3'
+            }
         });
     });
 </script>
 @endif
 
+
+                        {{-- ❌ Show SweetAlert for error (like already submitted) --}}
+                        @if($errors->has('error'))
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function () {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: '⚠️ Already Submitted',
+                                    html: '<strong>{{ $errors->first('error') }}</strong>',
+                                    showConfirmButton: false,
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                    background: '#fff5f5',
+                                    color: '#c53030',
+                                    toast: true,
+                                    position: 'top-end',
+                                    customClass: {
+                                        popup: 'shadow-lg rounded-3'
+                                    }
+                                });
+                            });
+                        </script>
+                        @endif
                         <!-- Submit Button -->
                         <div class="d-flex justify-content-between">
                             <button class="btn btn-secondary rounded-pill btn-lg" type="button" onclick="prevStep(3)">Back</button>

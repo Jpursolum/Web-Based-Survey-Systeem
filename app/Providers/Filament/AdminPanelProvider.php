@@ -19,26 +19,25 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Widgets\TotalSurveyStats;
 
-
-
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
-        
             ->default()
             ->id('admin')
             ->path('admin')
             ->login()
             ->unsavedChangesAlerts()
-            ->sidebarFullyCollapsibleOnDesktop() // Fully collapsible sidebar on desktop
+            ->sidebarFullyCollapsibleOnDesktop()
+            ->maxContentWidth('10xl') // or mas maliit like '5xl'
+            ->sidebarWidth('16rem')
             ->brandLogo(asset('images/image.png'), ['style' => 'width: 100px; height: 100px;']) 
             ->font('Poppins')
+            ->registration()
             ->colors([
-                'primary' => Color::Green,
-            
-            
+                'primary' => \Filament\Support\Colors\Color::Indigo,
+                 'danger' => \Filament\Support\Colors\Color::Rose,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
@@ -47,10 +46,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                // Add these two widgets side by side using a custom layout
-                Widgets\AccountWidget::class,
+ 
                 TotalSurveyStats::class,
-                \App\Filament\Widgets\SurveyChart::class, // 👈 Add this line
+                \App\Filament\Widgets\SurveyChart::class,
             ])
             ->middleware([
                 EncryptCookies::class,

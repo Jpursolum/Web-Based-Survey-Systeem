@@ -155,6 +155,8 @@ class SurveyResource extends Resource
                     'Online' => 'Online Transaction',
                     'Both' => 'Both',
                 ]),
+                SelectFilter::make('region')
+                ->options(Survey::query()->pluck('region', 'region')->toArray())
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

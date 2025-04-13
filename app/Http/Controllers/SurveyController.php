@@ -3,12 +3,33 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Cache\RateLimiter;
 use App\Models\Survey;
 
 class SurveyController extends Controller
 {
     public function store(Request $request)
     {
+        // 🕵️‍♂️ Honeypot check
+        if (!empty($request->input('website'))) {
+            return redirect()->back()->withErrors(['error' => 'Bot detected.']);
+        }
+
+        // 🚫 Throttle check per IP (1 every 5 mins)
+        $key = 'survey-submit:' . $request->ip();
+        $limiter = app(RateLimiter::class);
+
+        if ($limiter->tooManyAttempts($key, 1)) {
+            $seconds = $limiter->availableIn($key);
+            $minutes = ceil($seconds / 60);
+            return redirect()->back()->withErrors([
+                'error' => "Too many submissions. Please try again in $minutes minute(s)."
+            ]);
+        }
+
+        $limiter->hit($key, 300); // Lock for 5 minutes (300 seconds)
+
+        // ✅ Validate the form
         $validated = $request->validate([
             'email' => 'nullable|email',
             'client_type' => 'required|string',
@@ -22,7 +43,6 @@ class SurveyController extends Controller
             'visibility_cc' => 'required|string',
             'usefulness_cc' => 'required|string',
 
-            // Allow survey questions to be nullable
             'SQD0' => 'nullable|string',
             'SQD1' => 'nullable|string',
             'SQD2' => 'nullable|string',
@@ -33,21 +53,18 @@ class SurveyController extends Controller
             'SQD7' => 'nullable|string',
             'SQD8' => 'nullable|string',
         ]);
-        
-        // Store the validated data
-        Survey::create($validated);
-    // Flash success message to the session
-    session()->flash('success', 'Survey submitted successfully!');
 
-    return redirect()->back(); // Redirect back to the previous page
+        // 💾 Save the response
+        Survey::create($validated);
+
+        session()->flash('success', 'Survey submitted successfully!');
+        return redirect()->back();
     }
 
     public function export(Request $request)
     {
-        // Start with all surveys
         $surveys = Survey::query();
 
-        // Apply filters if provided
         if ($request->has('sex') && $request->sex != '') {
             $surveys->where('sex', $request->sex);
         }
@@ -60,28 +77,23 @@ class SurveyController extends Controller
             $surveys->where('region', $request->region);
         }
 
-        // Add any other filters you might have here...
-        
-        // Get the filtered results
         $surveys = $surveys->get();
-
-        // Set the filename for export
         $filename = "surveys_" . now()->format('Ymd_His') . ".csv";
-        
-        // Set headers for CSV file download
+
         $headers = [
             "Content-type" => "text/csv",
             "Content-Disposition" => "attachment; filename=$filename",
         ];
 
-        // Create the CSV file and return as a response
-        $callback = function() use ($surveys) {
+        $callback = function () use ($surveys) {
             $file = fopen('php://output', 'w');
-            
-            // Add CSV column headers
-            fputcsv($file, ['Email', 'Client Type', 'Date', 'Sex', 'Age', 'Region', 'Service Availed', 'Transaction Mode', 'Awareness CC', 'Visibility CC', 'Usefulness CC', 'SQD0', 'SQD1', 'SQD2', 'SQD3', 'SQD4', 'SQD5', 'SQD6', 'SQD7', 'SQD8']);
-            
-            // Add survey responses to CSV
+            fputcsv($file, [
+                'Email', 'Client Type', 'Date', 'Sex', 'Age', 'Region',
+                'Service Availed', 'Transaction Mode', 'Awareness CC',
+                'Visibility CC', 'Usefulness CC', 'SQD0', 'SQD1', 'SQD2',
+                'SQD3', 'SQD4', 'SQD5', 'SQD6', 'SQD7', 'SQD8'
+            ]);
+
             foreach ($surveys as $survey) {
                 fputcsv($file, [
                     $survey->email,
@@ -110,7 +122,6 @@ class SurveyController extends Controller
             fclose($file);
         };
 
-        // Return the CSV file as a downloadable response
         return response()->stream($callback, 200, $headers);
     }
 }
