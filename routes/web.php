@@ -1,10 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\SurveyExportController; // <-- Add this line if you create a controller for exporting
+//use App\Http\Livewire\AiGenerator;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,5 +20,9 @@ Route::get('/surveys/export', [SurveyController::class, 'export'])->name('survey
 
 // ✅ Main page route
 Route::get('/', [TemplateController::class, 'index']);
-// In routes/web.php
+
+// Survey responses route
 Route::get('/survey/responses', [SurveyController::class, 'index'])->name('survey.responses');
+
+// **Fix for Livewire route**:
+//Route::get('/ai', AiGenerator::class); // You can also use 'App\Http\Livewire\AiGenerator::class' but it's cleaner to just import the class like this

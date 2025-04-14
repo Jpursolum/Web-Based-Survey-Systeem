@@ -23,7 +23,7 @@ class Dashboard extends Page
             TransactionModeChart::class,
             // Optionally, add other widgets for the second column
             TopRegionsChart::class,
-            AverageSurveyRatings::class,
+           // AverageSurveyRatings::class,
         ];
     }
 }
