@@ -1,5 +1,6 @@
 <?php
 
+use App\Filament\Pages\AiAssistant;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\TemplateController;
